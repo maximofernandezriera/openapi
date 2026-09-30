@@ -24,6 +24,30 @@ paths:
                 - id: 2
                   title: Read a book
                   completed: true
+    post:
+      summary: Create a task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskInput'
+            example:
+              title: Buy groceries
+              description: Milk, bread, and eggs
+              completed: false
+      responses:
+        '201':
+          description: The task was created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+              example:
+                id: 1
+                title: Buy groceries
+                description: Milk, bread, and eggs
+                completed: false
   /tasks/{id}:
     get:
       summary: Get a task by ID
@@ -46,6 +70,58 @@ paths:
                 title: Buy groceries
                 description: Milk, bread, and eggs
                 completed: false
+        '404':
+          description: Task not found.
+    put:
+      summary: Replace a task
+      description: >-
+        Replaces the editable fields of a task. PUT is chosen over PATCH because
+        the request body uses TaskInput, which requires the task title; a
+        partial update that changes other fields without sending the title
+        would need a different request schema.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Task identifier.
+          schema:
+            $ref: '#/components/schemas/Task/properties/id'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskInput'
+            example:
+              title: Buy groceries
+              description: Milk, bread, and eggs
+              completed: true
+      responses:
+        '200':
+          description: The task was updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+              example:
+                id: 1
+                title: Buy groceries
+                description: Milk, bread, and eggs
+                completed: true
+        '404':
+          description: Task not found.
+    delete:
+      summary: Delete a task
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Task identifier.
+          schema:
+            $ref: '#/components/schemas/Task/properties/id'
+      responses:
+        '204':
+          description: The task was deleted.
         '404':
           description: Task not found.
 components:
