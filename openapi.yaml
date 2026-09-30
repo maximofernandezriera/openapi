@@ -24,6 +24,8 @@ paths:
                 - id: 2
                   title: Read a book
                   completed: true
+        '500':
+          $ref: '#/components/responses/InternalServerError'
     post:
       summary: Create a task
       requestBody:
@@ -37,6 +39,8 @@ paths:
               description: Milk, bread, and eggs
               completed: false
       responses:
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '201':
           description: The task was created.
           content:
@@ -48,6 +52,8 @@ paths:
                 title: Buy groceries
                 description: Milk, bread, and eggs
                 completed: false
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /tasks/{id}:
     get:
       summary: Get a task by ID
@@ -71,7 +77,9 @@ paths:
                 description: Milk, bread, and eggs
                 completed: false
         '404':
-          description: Task not found.
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
     put:
       summary: Replace a task
       description: >-
@@ -97,6 +105,8 @@ paths:
               description: Milk, bread, and eggs
               completed: true
       responses:
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '200':
           description: The task was updated.
           content:
@@ -109,7 +119,9 @@ paths:
                 description: Milk, bread, and eggs
                 completed: true
         '404':
-          description: Task not found.
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
     delete:
       summary: Delete a task
       parameters:
@@ -123,9 +135,23 @@ paths:
         '204':
           description: The task was deleted.
         '404':
-          description: Task not found.
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 components:
   schemas:
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          description: Stable identifier for the error.
+        message:
+          type: string
+          description: Human-readable description of the error.
     Task:
       type: object
       required:
@@ -161,3 +187,31 @@ components:
           type: boolean
           description: Whether the task is completed; defaults to false.
           default: false
+  responses:
+    BadRequest:
+      description: The request body is invalid.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: INVALID_REQUEST
+            message: The request body is invalid.
+    NotFound:
+      description: The requested task was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: TASK_NOT_FOUND
+            message: The requested task was not found.
+    InternalServerError:
+      description: An unexpected server error occurred.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            code: INTERNAL_SERVER_ERROR
+            message: An unexpected server error occurred.
