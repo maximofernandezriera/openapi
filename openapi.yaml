@@ -3,7 +3,51 @@ info:
   title: Task API
   version: 1.0.0
   description: OpenAPI specification for a task management API.
-paths: {}
+paths:
+  /tasks:
+    get:
+      summary: List tasks
+      responses:
+        '200':
+          description: A list of tasks.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Task'
+              example:
+                - id: 1
+                  title: Buy groceries
+                  description: Milk, bread, and eggs
+                  completed: false
+                - id: 2
+                  title: Read a book
+                  completed: true
+  /tasks/{id}:
+    get:
+      summary: Get a task by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Task identifier.
+          schema:
+            $ref: '#/components/schemas/Task/properties/id'
+      responses:
+        '200':
+          description: The requested task.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+              example:
+                id: 1
+                title: Buy groceries
+                description: Milk, bread, and eggs
+                completed: false
+        '404':
+          description: Task not found.
 components:
   schemas:
     Task:
